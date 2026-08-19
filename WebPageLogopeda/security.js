@@ -43,9 +43,9 @@
 
     const payload = {
       email,
-      phone,
       first_name: first,
       last_name: last,
+      phone,
       dob: dob || null,
       public_notes: notes,
       private_notes: privateNotes
@@ -55,7 +55,10 @@
     if (existingInvite) {
       result = await sb.from('patient_invites').update(payload).eq('id', existingInvite.id);
     } else {
-      result = await sb.from('patient_invites').insert(payload);
+      result = await sb.from('patient_invites').insert({
+        ...payload,
+        created_by: currentUser.id
+      });
     }
 
     if (result.error) {
