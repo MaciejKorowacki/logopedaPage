@@ -1,0 +1,4 @@
+.btn-register { background: #f59e0b; color: #fff; }
+.btn-register:hover { background: #d97706; }
+.login-info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+.login-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
