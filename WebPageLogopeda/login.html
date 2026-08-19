@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Logowanie – Gabinet Logopedyczny</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e3a8a">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="login-body">
+<div class="login-container">
+<div class="login-card">
+<img src="icon.png" alt="Logo" class="login-logo-img">
+<h1>Gabinet Neurologopedyczny</h1>
+<p class="login-subtitle">A. Korowacka</p>
+<div id="login-error" class="login-error hidden"></div>
+<form id="login-form">
+<div class="form-group">
+<label for="email">E-mail</label>
+<input type="email" id="email" required placeholder="twoj@email.pl" autocomplete="email">
+</div>
+<div class="form-group">
+<label for="password">Hasło</label>
+<div class="password-wrapper">
+<input type="password" id="password" required placeholder="Min. 6 znaków" autocomplete="current-password">
+<button type="button" id="toggle-pwd" class="toggle-pwd" aria-label="Pokaż hasło">👁️</button>
+</div>
+</div>
+<button type="submit" class="btn btn-primary btn-full" id="login-btn">Zaloguj się / Zarejestruj się</button>
+</form>
+<p class="login-hint">Wpisz e-mail i hasło. Jeśli nie masz konta – zostanie utworzone automatycznie.</p>
+</div>
+</div>
+<div id="toast-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="login.js"></script>
+</body>
+</html>

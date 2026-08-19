@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gabinet Neurologopedyczny – A. Korowacka</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e3a8a">
+<meta http-equiv="refresh" content="0;url=app.html">
+<script>
+// Check if already logged in; redirect accordingly
+const session = JSON.parse(localStorage.getItem('sb-session') || 'null');
+location.href = (session && session.access_token) ? 'app.html' : 'login.html';
+</script>
+</head>
+<body>
+<p>Przekierowanie... <a href="login.html">Zaloguj się</a></p>
+</body>
+</html>
