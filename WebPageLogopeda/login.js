@@ -4,20 +4,12 @@
    ============================================================================ */
 
 const SUPABASE_URL = 'https://dclbsucsccsegvpmmgdn.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkY2xic3Vjc2NzZWd2NtbW1nZG4iLCJyb2xlIjoiYW5vbiJ9';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkY2xic3Vjc2NzZWd2c2Nzd2dG1tZ2RuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwOTA1NjksImV4cCI6MjEwMjY2NjU2OX0.HEVj0gPxioLmCR8SZYgt8qi-Nw47UMYrSgKLUrBZedQ';
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-const THERAPIST_EMAILS = ['kontakt@logopedaostroda.pl', 'ziomekzpolski@yahoo.com'];
-
 let accountStatus = null;
 let statusTimer = null;
-
-// Keep the existing public anon key from the project if it is already present in
-// the page via the Supabase client. This fallback is replaced below by the real
-// project key when the file is deployed from the repository.
-
-const originalCreateClient = window.supabase.createClient;
 
 function normalizeEmail(value) {
   return String(value || '').trim().toLowerCase();
@@ -77,10 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // If status has not been resolved yet, resolve it before deciding what the button does.
-    if (!accountStatus) {
-      await refreshAccountStatus(email);
-    }
+    if (!accountStatus) await refreshAccountStatus(email);
 
     if (accountStatus === 'registered') {
       await login(email, password);
@@ -103,9 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (accountStatus === 'setup') {
-      // This state is reserved for an Auth user without an email/password hash.
-      // The browser cannot safely manufacture an Auth password for an existing
-      // account, so direct the user to the supported recovery/setup mechanism.
       showError('To konto wymaga ustawienia hasła. Użyj opcji odzyskiwania hasła lub skontaktuj się z gabinetem.');
       return;
     }
@@ -158,8 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
       submitBtn.textContent = 'Sprawdzanie...';
     } else {
       submitBtn.textContent = 'Zaloguj się';
-      if (message) hint.textContent = message;
-      else hint.textContent = 'Wpisz e-mail i hasło. Jeśli nie masz konta, przycisk zmieni się na „Zarejestruj się”.';
+      hint.textContent = message || 'Wpisz e-mail. Jeśli konto nie istnieje, przycisk zmieni się na „Zarejestruj się”.';
       hint.classList.remove('login-info');
     }
   }
@@ -204,14 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Tworzenie konta...';
 
-    const { data, error } = await sb.auth.signUp({
-      email,
-      password,
-      options: { data: { email } }
-    });
-
+    const { data, error } = await sb.auth.signUp({ email, password });
     if (error) {
-      // Never turn an existing-account login failure into a second signup attempt.
       showError(error.message || 'Nie udało się utworzyć konta.');
       setLoginMode('register');
       submitBtn.disabled = false;
@@ -220,17 +199,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (data.session) {
       localStorage.setItem('sb-session', JSON.stringify(data.session));
-      showSuccessAndReturn('Konto zostało utworzone. Za chwilę przejdziesz do aplikacji.');
+      showSuccess('Konto zostało utworzone. Za chwilę przejdziesz do aplikacji.');
       setTimeout(() => { location.href = 'app.html'; }, 700);
       return;
     }
 
-    // Email confirmation enabled: return to login instead of leaving the user in registration mode.
     accountStatus = 'registered';
     removePasswordConfirmation();
     passwordInput.value = '';
     setLoginMode('login');
-    showSuccessAndReturn('Konto zostało utworzone. Sprawdź e-mail, aby potwierdzić konto, a następnie zaloguj się.');
+    showSuccess('Konto zostało utworzone. Sprawdź e-mail, aby potwierdzić konto, a następnie zaloguj się.');
     submitBtn.disabled = false;
   }
 
@@ -245,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     errorBox.classList.remove('hidden', 'login-success');
   }
 
-  function showSuccessAndReturn(msg) {
+  function showSuccess(msg) {
     errorBox.textContent = msg;
     errorBox.classList.remove('hidden');
     errorBox.classList.add('login-success');
