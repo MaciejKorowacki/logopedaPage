@@ -5,268 +5,28 @@
 <title>Gabinet Neurologopedyczny – A. Korowacka</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1e3a8a">
+<meta http-equiv="refresh" content="0;url=app.html">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6/index.global.min.css" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="app-layout">
-<nav class="app-nav">
-<div class="nav-brand"><img src="icon.png" alt="" class="nav-icon"> Aneta Korowacka Neurologopeda</div>
-<div class="nav-tabs-container" id="nav-tabs-container">
-<!-- tabs are built dynamically in app.js -->
-</div>
-<div class="nav-right">
-  <span id="nav-greeting" class="nav-greeting"></span>
-  <button id="logout-btn" class="btn btn-logout">Wyloguj</button>
-</div>
-</nav>
+<div class="app-layout"><nav class="app-nav"><div class="nav-brand"><img src="icon.png" alt="" class="nav-icon"> Aneta Korowacka Neurologopeda</div><div class="nav-tabs-container" id="nav-tabs-container"></div><div class="nav-right"><span id="nav-greeting" class="nav-greeting"></span><button id="logout-btn" class="btn btn-logout">Wyloguj</button></div></nav>
 <main class="app-main">
-
-<!-- KALENDARZ -->
-<section id="tab-calendar" class="tab-panel active">
-<h2 class="section-title">Kalendarz wizyt</h2>
-<div class="action-bar action-bar-card">
-<button id="new-appointment-btn" class="btn btn-primary hidden">+ Nowa wizyta</button>
-</div>
-<div class="calendar-card">
-<div id="calendar"></div>
-</div>
-</section>
-
-<!-- ĆWICZENIA -->
-<section id="tab-exercises" class="tab-panel">
-<h2 class="section-title">Ćwiczenia</h2>
-<div class="action-bar action-bar-card">
-<div id="exercise-therapist-controls" class="hidden">
-<button id="add-exercise-btn" class="btn btn-primary btn-sm">+ Dodaj ćwiczenie</button>
-</div>
-<div class="sub-tabs" id="exercise-sub-tabs">
-<button class="sub-tab active" data-filter="all" onclick="filterExercises('all',this)">Wszystkie</button>
-<button class="sub-tab" data-filter="favorites" onclick="filterExercises('favorites',this)">Ulubione ćwiczenia</button>
-</div>
-</div>
-<div id="exercises-list" class="cards-grid"></div>
-<div id="favorite-exercises-sidebar" class="sidebar hidden">
-<h3><img src="icon.png" alt="" class="inline-icon"> Szybki dostęp – ulubione</h3>
-<div id="favorites-list"></div>
-</div>
-</section>
-
-<!-- KONTA (tylko terapeuta) -->
-<section id="tab-accounts" class="tab-panel">
-<div class="section-header"><h2>Konta pacjentów</h2></div>
-<div class="form-card accounts-top">
-<div class="combobox-row">
-<div class="form-group" style="flex:1;margin-bottom:0">
-<label>Pacjent</label>
-<input type="text" id="account-search" placeholder="Szukaj po imieniu / nazwisku..." autocomplete="off">
-</div>
-<button id="create-profile-btn" class="btn btn-primary btn-sm" style="align-self:flex-end">+ Utwórz nowy profil</button>
-</div>
-<div id="account-list" class="account-list"></div>
-</div>
-<div id="account-detail" class="hidden form-card" style="margin-top:16px">
-<h3 id="account-detail-title">Dane pacjenta</h3>
-<div id="account-detail-age" class="age-display"></div>
-<form id="account-edit-form">
-<div class="form-row"><div class="form-group"><label>E-mail konta</label><input type="email" id="acc-email" readonly class="readonly-input"></div>
-<div class="form-group"><label>Telefon konta</label><input type="tel" id="acc-phone"></div></div>
-<div class="form-row"><div class="form-group"><label>Imię pacjenta</label><input type="text" id="acc-first"></div>
-<div class="form-group"><label>Nazwisko pacjenta</label><input type="text" id="acc-last"></div></div>
-<div class="form-row"><div class="form-group"><label>Data urodzenia</label><input type="date" id="acc-dob"></div>
-<div class="form-group"><label>Wiek</label><input type="text" id="acc-age" readonly class="readonly-input"></div></div>
-<div class="form-group"><label>Notatka dla pacjenta (widoczna)</label><textarea id="acc-public-notes" rows="2"></textarea></div>
-<div class="form-group"><label>Notatka dla logopedy (prywatna)</label><textarea id="acc-private-notes" rows="2"></textarea></div>
-<button type="submit" class="btn btn-primary">Zapisz dane pacjenta</button>
-</form>
-</div>
-</section>
-
-<!-- PROFIL -->
-<section id="tab-profile" class="tab-panel">
-<div class="section-header"><h2>Profil</h2></div>
-<div id="profile-locked-msg" class="alert-box hidden">
-<strong>Twoje dane zostały zapisane.</strong> Tylko terapeuta może je zmienić. Skontaktuj się z gabinetem, aby zaktualizować informacje.
-</div>
-<form id="profile-form" class="form-card">
-<div class="form-row"><div class="form-group"><label>E-mail konta</label><input type="email" id="prof-email" readonly class="readonly-input"></div>
-<div class="form-group"><label>Telefon konta</label><input type="tel" id="prof-phone"></div></div>
-<div class="form-row"><div class="form-group"><label>Imię pacjenta</label><input type="text" id="prof-first"></div>
-<div class="form-group"><label>Nazwisko pacjenta</label><input type="text" id="prof-last"></div></div>
-<div class="form-row"><div class="form-group"><label>Data urodzenia</label><input type="date" id="prof-dob"></div>
-<div class="form-group"><label>Wiek</label><input type="text" id="prof-age" readonly class="readonly-input"></div></div>
-<div class="form-group" id="prof-notes-group"><label>Informacje od logopedy</label><textarea id="prof-notes" rows="3"></textarea></div>
-<button type="submit" class="btn btn-primary" id="prof-save-btn">Zapisz profil</button>
-</form>
-
-</section>
-
-<!-- POWIADOMIENIA -->
-<section id="tab-notifications" class="tab-panel">
-<div class="section-header"><h2>Powiadomienia</h2>
-<button id="mark-all-read" class="btn btn-outline btn-sm" style="margin-left:auto">✓ Oznacz wszystkie jako przeczytane</button></div>
-<div id="notif-sub-tabs" class="notif-sub-tabs">
-  <button class="sub-tab active" onclick="filterNotifications('unread', this)">Nieprzeczytane</button>
-  <button class="sub-tab" onclick="filterNotifications('read', this)">Przeczytane</button>
-  <button class="sub-tab" onclick="filterNotifications('all', this)">Wszystkie</button>
-</div>
-<div id="broadcast-btn-container" class="hidden" style="margin-bottom:12px">
-  <button class="btn btn-primary btn-sm" onclick="openModal('broadcast-modal')">📢 Wyślij do wszystkich</button>
-</div>
-<div id="notifications-list" class="cards-grid"></div>
-</section>
-
-<!-- Broadcast Modal -->
-<div id="broadcast-modal" class="modal hidden">
-  <div class="modal-overlay" onclick="closeModalAll()"></div>
-  <div class="modal-content broadcast-modal-content">
-    <h2>Wyślij wiadomość do wszystkich pacjentów</h2>
-    <textarea id="broadcast-msg" rows="4" placeholder="Wpisz treść wiadomości..." style="width:100%;resize:vertical;margin-bottom:12px;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:1rem"></textarea>
-    <div style="display:flex;gap:8px;justify-content:flex-end">
-      <button class="btn btn-outline btn-sm" onclick="closeModalAll()">Anuluj</button>
-      <button class="btn btn-primary btn-sm" onclick="sendBroadcast()">Wyślij</button>
-    </div>
-  </div>
-</div>
-
-<!-- WIZYTÓWKA -->
-<section id="tab-contact" class="tab-panel">
-<div class="contact-card">
-<img src="icon.png" alt="Logo" class="contact-logo">
-<h2>Anna Korowacka</h2>
-<p class="contact-title">Logopeda Neurologopeda</p>
-<div class="contact-details">
-<div class="contact-item">📱 <a href="tel:+48606140728">606 140 728</a></div>
-<div class="contact-item">📧 <a href="mailto:kontakt@logopedaostroda.pl">kontakt@logopedaostroda.pl</a></div>
-<div class="contact-item">📘 <a href="https://facebook.com/logopedaostroda" target="_blank">Facebook</a></div>
-</div>
-</div>
-</section>
-
-</main>
-</div>
-
-<!-- MODAL: Szczegóły wizyty -->
-<div id="appointment-modal" class="modal hidden">
-<div class="modal-overlay"></div>
-<div class="modal-content">
-<div class="modal-header"><h3 id="modal-title"></h3><div class="modal-header-actions"><button class="btn btn-outline btn-sm" onclick="closeModalAll()">Wróć</button><button class="modal-close">✕</button></div></div>
-<div id="modal-body"></div>
-<div id="modal-actions" class="modal-footer"></div>
-</div>
-</div>
-
-<!-- MODAL: Nowa wizyta -->
-<div id="new-appointment-modal" class="modal hidden">
-<div class="modal-overlay"></div>
-<div class="modal-content modal-lg">
-<div class="modal-header"><h3>Nowa wizyta</h3><button class="modal-close">✕</button></div>
-<form id="new-appointment-form">
-<div class="form-group">
-<label>Pacjent</label>
-<div class="combobox-wrapper">
-<input type="text" id="apt-patient-search" placeholder="Szukaj po imieniu / nazwisku..." autocomplete="off">
-<div id="apt-patient-dropdown" class="combobox-dropdown hidden"></div>
-</div>
-</div>
-<div id="apt-patient-data" class="hidden" style="margin-bottom:12px">
-<div class="form-row"><div class="form-group"><label>E-mail pacjenta</label><input type="email" id="apt-email" readonly class="readonly-input"></div>
-<div class="form-group"><label>Telefon</label><input type="tel" id="apt-phone" readonly class="readonly-input"></div></div>
-<div class="form-row"><div class="form-group"><label>Imię i nazwisko</label><input type="text" id="apt-name" readonly class="readonly-input"></div>
-<div class="form-group"><label>Data urodzenia</label><input type="date" id="apt-dob" readonly class="readonly-input"></div></div>
-<div id="apt-age-display" class="age-display"></div>
-</div>
-<div class="form-group"><label>Tytuł wizyty</label><input type="text" id="apt-title" value="Wizyta logopedyczna"></div>
-<div class="form-row"><div class="form-group"><label>Data</label><input type="date" id="apt-date"></div>
-<div class="form-group"><label>Godzina</label>
-<select id="apt-time" class="time-select">
-<!-- full hours 7-21 -->
-</select></div></div>
-<div class="form-group">
-<label class="checkbox-label"><input type="checkbox" id="apt-recurring"> Powtarzaj cyklicznie</label>
-</div>
-<div id="recurring-options" class="hidden" style="margin-top:8px">
-<div class="form-group">
-<label>Częstotliwość</label>
-<select id="apt-recurring-type">
-<option value="weekly">Co tydzień</option>
-<option value="biweekly">Co 2 tygodnie</option>
-<option value="monthly">Co miesiąc</option>
-</select>
-</div>
-<div class="form-group"><label>Miesiące powtórzeń</label>
-<div class="months-grid" id="recurring-months"></div></div>
-</div>
-
-<button type="submit" class="btn btn-primary btn-full">Zapisz wizytę</button>
-</form>
-</div>
-</div>
-
-<!-- MODAL: Przełożenie wizyty -->
-<div id="reschedule-modal" class="modal hidden">
-<div class="modal-overlay"></div>
-<div class="modal-content">
-<div class="modal-header"><h3>Przełóż wizytę</h3><button class="modal-close">✕</button></div>
-<div id="reschedule-body">
-<div class="form-group"><label>Nowa data</label><input type="date" id="resched-date"></div>
-<div id="resched-slots" class="slots-grid"></div>
-</div>
-<div class="modal-footer">
-<button id="resched-confirm" class="btn btn-primary" disabled>Wyślij prośbę</button>
-</div>
-</div>
-</div>
-
-<!-- MODAL: Dodaj ćwiczenie -->
-<div id="exercise-modal" class="modal hidden">
-<div class="modal-overlay"></div>
-<div class="modal-content">
-<div class="modal-header"><h3>Dodaj ćwiczenie</h3><button class="modal-close">✕</button></div>
-<form id="exercise-form">
-<div class="form-group"><label>Tytuł</label><input type="text" id="ex-title" required></div>
-<div class="form-group"><label>Opis</label><textarea id="ex-desc" rows="3"></textarea></div>
-<div class="form-group"><label>Link do materiału (opcjonalny)</label><input type="url" id="ex-link" placeholder="https://..."></div>
-
-<button type="submit" class="btn btn-primary btn-full">Zapisz ćwiczenie</button>
-</form>
-</div>
-</div>
-
-<!-- MODAL: Notatka przed edycją konta -->
-<div id="note-before-edit-modal" class="modal hidden">
-<div class="modal-overlay"></div>
-<div class="modal-content">
-<div class="modal-header"><h3>Notatki przed edycją</h3><button class="modal-close">✕</button></div>
-<div class="form-group"><label>Czy chcesz dodać notatkę dla pacjenta?</label><textarea id="note-for-patient" rows="2" placeholder="Notatka widoczna dla pacjenta..."></textarea></div>
-<div class="form-group"><label>Notatka dla logopedy?</label><textarea id="note-for-therapist" rows="2" placeholder="Notatka prywatna (tylko dla terapeuty)..."></textarea></div>
-<div class="modal-footer">
-<button id="note-save-btn" class="btn btn-primary">Zapisz notatki i edytuj</button>
-<button class="btn btn-outline modal-close-btn">Pomiń</button>
-</div>
-</div>
-</div>
-
-<!-- MODAL: Info after first profile save -->
-<div id="profile-save-popup" class="modal hidden">
-<div class="modal-overlay"></div>
-<div class="modal-content" style="max-width:420px;text-align:center">
-<div class="modal-header"><h3>Profil zapisany</h3><button class="modal-close">✕</button></div>
-<div class="popup-body">
-<div class="popup-icon">✅</div>
-<p><strong>Twoje dane zostały zapisane.</strong></p>
-<p>Możesz zapisać profil tylko raz. Po zapisaniu tylko logopeda może zmienić Twoje dane — skontaktuj się z gabinetem, aby zaktualizować informacje.</p>
-</div>
-<div class="modal-footer" style="justify-content:center">
-<button class="btn btn-primary" onclick="closeModalAll()">Rozumiem</button>
-</div>
-</div>
-</div>
-
+<section id="tab-calendar" class="tab-panel active"><h2 class="section-title">Kalendarz wizyt</h2><div class="action-bar action-bar-card"><button id="new-appointment-btn" class="btn btn-primary hidden">+ Nowa wizyta</button></div><div class="calendar-card"><div id="calendar"></div></div></section>
+<section id="tab-exercises" class="tab-panel"><h2 class="section-title">Ćwiczenia</h2><div class="action-bar action-bar-card"><div id="exercise-therapist-controls" class="hidden"><button id="add-exercise-btn" class="btn btn-primary btn-sm">+ Dodaj ćwiczenie</button></div><div class="sub-tabs" id="exercise-sub-tabs"><button class="sub-tab active" data-filter="all" onclick="filterExercises('all',this)">Wszystkie</button><button class="sub-tab" data-filter="favorites" onclick="filterExercises('favorites',this)">Ulubione ćwiczenia</button></div></div><div id="exercises-list" class="cards-grid"></div><div id="favorite-exercises-sidebar" class="sidebar hidden"><h3><img src="icon.png" alt="" class="inline-icon"> Szybki dostęp – ulubione</h3><div id="favorites-list"></div></div></section>
+<section id="tab-accounts" class="tab-panel"><div class="section-header"><h2>Konta pacjentów</h2></div><div class="form-card accounts-top"><div class="combobox-row"><div class="form-group" style="flex:1;margin-bottom:0"><label>Pacjent</label><input type="text" id="account-search" placeholder="Szukaj po imieniu / nazwisku..." autocomplete="off"></div><button id="create-profile-btn" class="btn btn-primary btn-sm" style="align-self:flex-end">+ Utwórz nowy profil</button></div><div id="account-list" class="account-list"></div></div><div id="account-detail" class="hidden form-card" style="margin-top:16px"><h3 id="account-detail-title">Dane pacjenta</h3><div id="account-detail-age" class="age-display"></div><form id="account-edit-form"><div class="form-row"><div class="form-group"><label>E-mail konta</label><input type="email" id="acc-email" readonly class="readonly-input"></div><div class="form-group"><label>Telefon konta</label><input type="tel" id="acc-phone"></div></div><div class="form-row"><div class="form-group"><label>Imię pacjenta</label><input type="text" id="acc-first"></div><div class="form-group"><label>Nazwisko pacjenta</label><input type="text" id="acc-last"></div></div><div class="form-row"><div class="form-group"><label>Data urodzenia</label><input type="date" id="acc-dob"></div><div class="form-group"><label>Wiek</label><input type="text" id="acc-age" readonly class="readonly-input"></div></div><div class="form-group"><label>Notatka dla pacjenta (widoczna)</label><textarea id="acc-public-notes" rows="2"></textarea></div><div class="form-group"><label>Notatka dla logopedy (prywatna)</label><textarea id="acc-private-notes" rows="2"></textarea></div><button type="submit" class="btn btn-primary">Zapisz dane pacjenta</button></form></div></section>
+<section id="tab-profile" class="tab-panel"><div class="section-header"><h2>Profil</h2></div><div id="profile-locked-msg" class="alert-box hidden"><strong>Twoje dane zostały zapisane.</strong> Tylko terapeuta może je zmienić. Skontaktuj się z gabinetem, aby zaktualizować informacje.</div><form id="profile-form" class="form-card"><div class="form-row"><div class="form-group"><label>E-mail konta</label><input type="email" id="prof-email" readonly class="readonly-input"></div><div class="form-group"><label>Telefon konta</label><input type="tel" id="prof-phone"></div></div><div class="form-row"><div class="form-group"><label>Imię pacjenta</label><input type="text" id="prof-first"></div><div class="form-group"><label>Nazwisko pacjenta</label><input type="text" id="prof-last"></div></div><div class="form-row"><div class="form-group"><label>Data urodzenia</label><input type="date" id="prof-dob"></div><div class="form-group"><label>Wiek</label><input type="text" id="prof-age" readonly class="readonly-input"></div></div><div class="form-group" id="prof-notes-group"><label>Informacje od logopedy</label><textarea id="prof-notes" rows="3"></textarea></div><button type="submit" class="btn btn-primary" id="prof-save-btn">Zapisz profil</button></form></section>
+<section id="tab-notifications" class="tab-panel"><div class="section-header"><h2>Powiadomienia</h2><button id="mark-all-read" class="btn btn-outline btn-sm" style="margin-left:auto">✓ Oznacz wszystkie jako przeczytane</button></div><div id="notif-sub-tabs" class="notif-sub-tabs"><button class="sub-tab active" onclick="filterNotifications('unread', this)">Nieprzeczytane</button><button class="sub-tab" onclick="filterNotifications('read', this)">Przeczytane</button><button class="sub-tab" onclick="filterNotifications('all', this)">Wszystkie</button></div><div id="broadcast-btn-container" class="hidden" style="margin-bottom:12px"><button class="btn btn-primary btn-sm" onclick="openModal('broadcast-modal')">📢 Wyślij do wszystkich</button></div><div id="notifications-list" class="cards-grid"></div></section>
+<section id="tab-contact" class="tab-panel"><div class="contact-card"><img src="icon.png" alt="Logo" class="contact-logo"><h2>Anna Korowacka</h2><p class="contact-title">Logopeda Neurologopeda</p><div class="contact-details"><div class="contact-item">📱 <a href="tel:+48606140728">606 140 728</a></div><div class="contact-item">📧 <a href="mailto:kontakt@logopedaostroda.pl">kontakt@logopedaostroda.pl</a></div><div class="contact-item">📘 <a href="https://facebook.com/logopedaostroda" target="_blank">Facebook</a></div></div></div></section>
+</main></div>
+<div id="appointment-modal" class="modal hidden"><div class="modal-overlay"></div><div class="modal-content"><div class="modal-header"><h3 id="modal-title"></h3><div class="modal-header-actions"><button class="btn btn-outline btn-sm" onclick="closeModalAll()">Wróć</button><button class="modal-close">✕</button></div></div><div id="modal-body"></div><div id="modal-actions" class="modal-footer"></div></div></div>
+<div id="new-appointment-modal" class="modal hidden"><div class="modal-overlay"></div><div class="modal-content modal-lg"><div class="modal-header"><h3>Nowa wizyta</h3><button class="modal-close">✕</button></div><form id="new-appointment-form"><div class="form-group"><label>Pacjent</label><div class="combobox-wrapper"><input type="text" id="apt-patient-search" placeholder="Szukaj po imieniu / nazwisku..." autocomplete="off"><div id="apt-patient-dropdown" class="combobox-dropdown hidden"></div></div></div><div id="apt-patient-data" class="hidden" style="margin-bottom:12px"><div class="form-row"><div class="form-group"><label>E-mail pacjenta</label><input type="email" id="apt-email" readonly class="readonly-input"></div><div class="form-group"><label>Telefon</label><input type="tel" id="apt-phone" readonly class="readonly-input"></div></div><div class="form-row"><div class="form-group"><label>Imię i nazwisko</label><input type="text" id="apt-name" readonly class="readonly-input"></div><div class="form-group"><label>Data urodzenia</label><input type="date" id="apt-dob" readonly class="readonly-input"></div></div><div id="apt-age-display" class="age-display"></div></div><div class="form-group"><label>Tytuł wizyty</label><input type="text" id="apt-title" value="Wizyta logopedyczna"></div><div class="form-row"><div class="form-group"><label>Data</label><input type="date" id="apt-date"></div><div class="form-group"><label>Godzina</label><select id="apt-time" class="time-select"></select></div></div><div class="form-group"><label class="checkbox-label"><input type="checkbox" id="apt-recurring"> Powtarzaj cyklicznie</label></div><div id="recurring-options" class="hidden" style="margin-top:8px"><div class="form-group"><label>Częstotliwość</label><select id="apt-recurring-type"><option value="weekly">Co tydzień</option><option value="biweekly">Co 2 tygodnie</option><option value="monthly">Co miesiąc</option></select></div><div class="form-group"><label>Miesiące powtórzeń</label><div class="months-grid" id="recurring-months"></div></div></div><button type="submit" class="btn btn-primary btn-full">Zapisz wizytę</button></form></div></div>
+<div id="reschedule-modal" class="modal hidden"><div class="modal-overlay"></div><div class="modal-content"><div class="modal-header"><h3>Przełóż wizytę</h3><button class="modal-close">✕</button></div><div id="reschedule-body"><div class="form-group"><label>Nowa data</label><input type="date" id="resched-date"></div><div id="resched-slots" class="slots-grid"></div></div><div class="modal-footer"><button id="resched-confirm" class="btn btn-primary" disabled>Wyślij prośbę</button></div></div></div>
+<div id="broadcast-modal" class="modal hidden"><div class="modal-overlay"></div><div class="modal-content"><h2>Wyślij wiadomość do wszystkich pacjentów</h2><textarea id="broadcast-msg" rows="4" placeholder="Wpisz treść wiadomości..."></textarea><div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModalAll()">Anuluj</button><button class="btn btn-primary btn-sm" onclick="sendBroadcast()">Wyślij</button></div></div></div>
+<div id="exercise-modal" class="modal hidden"><div class="modal-overlay"></div><div class="modal-content"><div class="modal-header"><h3>Dodaj ćwiczenie</h3><button class="modal-close">✕</button></div><form id="exercise-form"><div class="form-group"><label>Tytuł</label><input type="text" id="ex-title" required></div><div class="form-group"><label>Opis</label><textarea id="ex-desc" rows="3"></textarea></div><div class="form-group"><label>Link do materiału (opcjonalny)</label><input type="url" id="ex-link" placeholder="https://..."></div><button type="submit" class="btn btn-primary btn-full">Zapisz ćwiczenie</button></form></div></div>
+<div id="note-before-edit-modal" class="modal hidden"><div class="modal-overlay"></div><div class="modal-content"><div class="modal-header"><h3>Notatki przed edycją</h3><button class="modal-close">✕</button></div><div class="form-group"><label>Czy chcesz dodać notatkę dla pacjenta?</label><textarea id="note-for-patient" rows="2"></textarea></div><div class="form-group"><label>Notatka dla logopedy?</label><textarea id="note-for-therapist" rows="2"></textarea></div><div class="modal-footer"><button id="note-save-btn" class="btn btn-primary">Zapisz notatki i edytuj</button><button class="btn btn-outline modal-close-btn">Pomiń</button></div></div></div>
+<div id="profile-save-popup" class="modal hidden"><div class="modal-overlay"></div><div class="modal-content"><div class="modal-header"><h3>Profil zapisany</h3><button class="modal-close">✕</button></div><div class="popup-body"><div class="popup-icon">✅</div><p><strong>Twoje dane zostały zapisane.</strong></p><p>Możesz zapisać profil tylko raz. Po zapisaniu tylko logopeda może zmienić Twoje dane.</p></div><div class="modal-footer"><button class="btn btn-primary" onclick="closeModalAll()">Rozumiem</button></div></div></div>
 <div id="toast-container"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6/index.global.min.js"></script>
-<script src="app.js"></script>
-</body>
-</html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdn.jsdelivr.net/npm/fullcalendar@6/index.global.min.js"></script><script src="app.js"></script><script src="appointment-fixes.js"></script>
+</body></html>
