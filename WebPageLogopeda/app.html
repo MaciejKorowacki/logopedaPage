@@ -3,12 +3,10 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gabinet Neurologopedyczny – A. Korowacka</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1e3a8a">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#1e3a8a">
 <meta http-equiv="refresh" content="0;url=app.html">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6/index.global.min.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6/index.global.min.css" rel="stylesheet"><link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="app-layout"><nav class="app-nav"><div class="nav-brand"><img src="icon.png" alt="" class="nav-icon"> Aneta Korowacka Neurologopeda</div><div class="nav-tabs-container" id="nav-tabs-container"></div><div class="nav-right"><span id="nav-greeting" class="nav-greeting"></span><button id="logout-btn" class="btn btn-logout">Wyloguj</button></div></nav>
@@ -25,8 +23,7 @@
 <div id="reschedule-modal" class="modal hidden"><div class="modal-overlay"></div><div class="modal-content"><div class="modal-header"><h3>Przełóż wizytę</h3><button class="modal-close">✕</button></div><div id="reschedule-body"><div class="form-group"><label>Nowa data</label><input type="date" id="resched-date"></div><div id="resched-slots" class="slots-grid"></div></div><div class="modal-footer"><button id="resched-confirm" class="btn btn-primary" disabled>Wyślij prośbę</button></div></div></div>
 <div id="broadcast-modal" class="modal hidden"><div class="modal-overlay"></div><div class="modal-content"><h2>Wyślij wiadomość do wszystkich pacjentów</h2><textarea id="broadcast-msg" rows="4" placeholder="Wpisz treść wiadomości..."></textarea><div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModalAll()">Anuluj</button><button class="btn btn-primary btn-sm" onclick="sendBroadcast()">Wyślij</button></div></div></div>
 <div id="exercise-modal" class="modal hidden"><div class="modal-overlay"></div><div class="modal-content"><div class="modal-header"><h3>Dodaj ćwiczenie</h3><button class="modal-close">✕</button></div><form id="exercise-form"><div class="form-group"><label>Tytuł</label><input type="text" id="ex-title" required></div><div class="form-group"><label>Opis</label><textarea id="ex-desc" rows="3"></textarea></div><div class="form-group"><label>Link do materiału (opcjonalny)</label><input type="url" id="ex-link" placeholder="https://..."></div><button type="submit" class="btn btn-primary btn-full">Zapisz ćwiczenie</button></form></div></div>
-<div id="note-before-edit-modal" class="modal hidden"><div class="modal-overlay"></div><div class="modal-content"><div class="modal-header"><h3>Notatki przed edycją</h3><button class="modal-close">✕</button></div><div class="form-group"><label>Czy chcesz dodać notatkę dla pacjenta?</label><textarea id="note-for-patient" rows="2"></textarea></div><div class="form-group"><label>Notatka dla logopedy?</label><textarea id="note-for-therapist" rows="2"></textarea></div><div class="modal-footer"><button id="note-save-btn" class="btn btn-primary">Zapisz notatki i edytuj</button><button class="btn btn-outline modal-close-btn">Pomiń</button></div></div></div>
 <div id="profile-save-popup" class="modal hidden"><div class="modal-overlay"></div><div class="modal-content"><div class="modal-header"><h3>Profil zapisany</h3><button class="modal-close">✕</button></div><div class="popup-body"><div class="popup-icon">✅</div><p><strong>Twoje dane zostały zapisane.</strong></p><p>Możesz zapisać profil tylko raz. Po zapisaniu tylko logopeda może zmienić Twoje dane.</p></div><div class="modal-footer"><button class="btn btn-primary" onclick="closeModalAll()">Rozumiem</button></div></div></div>
 <div id="toast-container"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdn.jsdelivr.net/npm/fullcalendar@6/index.global.min.js"></script><script src="app.js"></script><script src="appointment-fixes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdn.jsdelivr.net/npm/fullcalendar@6/index.global.min.js"></script><script src="app.js"></script>
 </body></html>
