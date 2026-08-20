@@ -1,9 +1,10 @@
 /* Build 1 - Gabinet Neurologopedyczny
-   Supabase Auth is the only authentication/session source.
+   Supabase Auth is the source of truth.
+   sb-session is only a compatibility bridge for the current app.js.
 */
 
 const SUPABASE_URL = 'https://dclbsucsccsegvpmmgdn.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjbGJzdWNzY2d2bW1tZ2RuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwOTA1NjksImV4cCI6MjEwMjY2NjU2OX0.HEVj0gPxioLmCR8SZYgt8qi-Nw47UMYrSgKLUrBZedQ';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkY2xmc3VjczNjc2VndG1tZ2RuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwOTA1NjksImV4cCI6MjEwMjY2NjU2OX0.HEVj0gPxioLmCR8SZYgt8qi-Nw47UMYrSgKLUrBZedQ';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true } });
 const THERAPIST_EMAILS = ['kontakt@logopedaostroda.pl', 'ziomekzpolski@yahoo.com'];
 let redirecting = false;
@@ -13,11 +14,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   if(!form||!emailInput||!passwordInput||!errorBox||!submitBtn)return;
   togglePwd?.addEventListener('click',()=>{const type=passwordInput.type==='password'?'text':'password';passwordInput.type=type;togglePwd.textContent=type==='password'?'👁️':'🙈';});
 
-  // Old Build-1 compatibility session must never participate in authentication.
+  // Clear only a stale compatibility token. A valid Supabase session is copied below.
   localStorage.removeItem('sb-session');
   const {data,error}=await sb.auth.getSession();
   if(error)console.error('Supabase session error:',error);
-  if(data?.session){redirectToApp();return;}
+  if(data?.session){
+    localStorage.setItem('sb-session',JSON.stringify(data.session));
+    redirectToApp();
+    return;
+  }
 
   form.addEventListener('submit',async e=>{
     e.preventDefault(); if(redirecting)return; errorBox.classList.add('hidden');
@@ -28,6 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const result=await sb.auth.signInWithPassword({email,password});
       if(result.error)throw new Error(getAuthError(result.error));
       if(!result.data?.session||!result.data?.user)throw new Error('Nie udało się utworzyć sesji logowania.');
+      localStorage.setItem('sb-session',JSON.stringify(result.data.session));
       const role=THERAPIST_EMAILS.includes((result.data.user.email||email).toLowerCase())?'therapist':'patient';
       const profile=await sb.from('profiles').upsert({id:result.data.user.id,email:result.data.user.email||email,role},{onConflict:'id'});
       if(profile.error)console.warn('Profile update failed:',profile.error.message);
