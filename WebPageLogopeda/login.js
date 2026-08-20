@@ -1,10 +1,9 @@
 /* Build 1 - login
    Authentication is handled by Supabase Auth.
-   The application does not create a second authentication system.
 */
 
 const SUPABASE_URL = 'https://dclbsucsccsegvpmmgdn.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjbGJzdWNzY3NcsZWd2cG1tZ2RuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwOTA1NjksImV4cCI6MjEwMjY2NjU2OX0.HEVj0gPxioLmCR8SZYgt8qi-Nw47UMYrSgKLUrBZedQ';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjbGJzdWNzY2NlZ2d2bW1tZ2RuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwOTA1NjksImV4cCI6MjEwMjY2NjU2OX0.HEVj0gPxioLmCR8SZYgt8qi-Nw47UMYrSgKLUrBZedQ';
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
   auth: {
@@ -15,6 +14,8 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
 });
 
 const THERAPIST_EMAILS = ['kontakt@logopedaostroda.pl', 'ziomekzpolski@yahoo.com'];
+
+let redirecting = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
   const form = document.getElementById('login-form');
@@ -32,16 +33,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     togglePwd.textContent = type === 'password' ? '👁️' : '🙈';
   });
 
-  // Supabase is the source of truth. If a valid session already exists,
-  // do not show the login form again.
-  const { data: sessionData } = await sb.auth.getSession();
-  if (sessionData?.session) {
-    location.replace('app.html');
+  // Do not redirect repeatedly. Supabase persists its own session.
+  const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+  if (sessionError) {
+    console.error('Supabase session error:', sessionError);
+  } else if (sessionData?.session) {
+    redirectToApp();
     return;
   }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (redirecting) return;
+
     errorBox.classList.add('hidden');
 
     const email = emailInput.value.trim().toLowerCase();
@@ -52,56 +56,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    if (password.length < 6) {
-      showError('Hasło musi mieć min. 6 znaków.');
-      return;
-    }
-
     submitBtn.disabled = true;
     submitBtn.textContent = 'Logowanie...';
 
     try {
-      // 1. Normal login.
-      let result = await sb.auth.signInWithPassword({ email, password });
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
 
-      // 2. If the account does not exist, create it.
-      if (result.error) {
-        const signUp = await sb.auth.signUp({ email, password });
-
-        if (signUp.error) {
-          throw new Error(getAuthError(signUp.error));
-        }
-
-        // Email confirmation enabled in Supabase means there is no session yet.
-        if (!signUp.data?.session) {
-          showError('Konto zostało utworzone. Sprawdź e-mail i potwierdź konto, a następnie zaloguj się.');
-          return;
-        }
-
-        result = { data: signUp.data, error: null };
+      if (error) throw new Error(getAuthError(error));
+      if (!data?.session || !data?.user) {
+        throw new Error('Nie udało się utworzyć sesji logowania.');
       }
 
-      if (result.error || !result.data?.session) {
-        throw new Error(getAuthError(result.error) || 'Nie udało się zalogować.');
-      }
+      // Compatibility with Build-1 app.js. Supabase Auth remains the source
+      // of truth and also keeps the normal persisted session internally.
+      localStorage.setItem('sb-session', JSON.stringify(data.session));
 
-      const session = result.data.session;
-      const user = session.user;
-
-      // Supabase Auth owns the session. This legacy key is kept only for
-      // compatibility with the existing index.html/app.html during Build 1.
-      localStorage.setItem('sb-session', JSON.stringify(session));
-
-      // Profile creation is deliberately non-blocking for login. A database
-      // profile error must not make a successful authentication look like a
-      // failed login.
-      const role = THERAPIST_EMAILS.includes((user.email || email).toLowerCase())
+      const role = THERAPIST_EMAILS.includes((data.user.email || email).toLowerCase())
         ? 'therapist'
         : 'patient';
 
       const profileResult = await sb.from('profiles').upsert({
-        id: user.id,
-        email: user.email || email,
+        id: data.user.id,
+        email: data.user.email || email,
         role
       }, { onConflict: 'id' });
 
@@ -109,22 +85,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.warn('Profile was not created/updated:', profileResult.error.message);
       }
 
-      // Verify that the session is actually available before leaving the page.
       const { data: verified } = await sb.auth.getSession();
       if (!verified?.session) {
         localStorage.removeItem('sb-session');
-        throw new Error('Sesja logowania nie została zapisana. Spróbuj ponownie.');
+        throw new Error('Sesja logowania nie została zapisana.');
       }
 
-      location.replace('app.html');
+      redirectToApp();
     } catch (err) {
       console.error('Login error:', err);
       showError(err?.message || 'Nie udało się zalogować.');
-    } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Zaloguj się / Zarejestruj się';
     }
   });
+
+  function redirectToApp() {
+    if (redirecting) return;
+    redirecting = true;
+    window.location.replace('app.html');
+  }
 
   function showError(message) {
     errorBox.textContent = message;
@@ -132,13 +112,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function getAuthError(error) {
-    if (!error) return '';
-    if (error.message === 'Invalid login credentials') {
+    if (!error) return 'Nie udało się zalogować.';
+    const message = error.message || '';
+    if (message === 'Invalid login credentials') {
       return 'Nieprawidłowy e-mail lub hasło.';
     }
-    if (error.message?.toLowerCase().includes('email not confirmed')) {
+    if (message.toLowerCase().includes('email not confirmed')) {
       return 'Potwierdź adres e-mail przed zalogowaniem.';
     }
-    return error.message;
+    return message;
   }
 });
